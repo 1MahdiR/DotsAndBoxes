@@ -1,3 +1,5 @@
+DEPTH=4
+
 class Edge:
     def __init__(self, d, x, y, c):
         self.d = d
@@ -96,7 +98,7 @@ def calculate_reward_n_layer(edges, board_p:list, depth=0, turn=True, reward=0):
     current_depth = depth
     current_turn = turn
 
-    if depth == 3:
+    if depth == DEPTH:
         for i in ls:
             for j in i:
                 if j.c == 0:
@@ -130,21 +132,47 @@ def calculate_reward_n_layer(edges, board_p:list, depth=0, turn=True, reward=0):
                                 if SQUARED:
                                     m.r = "X"
                                     changed_squares.append(l)
-                    reward = calculate_reward_regret_0_layer(ls, board_p, depth=current_depth+1, turn=(current_turn))[0]
+                    reward = calculate_reward_n_layer(ls, board_p, depth=current_depth+1, turn=(current_turn))[0]
                     for m in changed_squares:
                         m.r = 0
                     j.c = 0
                 else:
                     j.c = 1
-                    reward = calculate_reward_regret_0_layer(ls, board_p, depth=current_depth+1, turn=(not current_turn))[0]
+                    reward = calculate_reward_n_layer(ls, board_p, depth=current_depth+1, turn=(not current_turn))[0]
                     j.c = 0
 
                 r_ls.append((reward, j))
     if turn:
-        m = max(r_ls, key=lambda x: x[0])
+        if r_ls:
+            m = max(r_ls, key=lambda x: x[0])
+        else:
+            m = 0
     else:
-        m = min(r_ls, key=lambda x: x[0])
+        if r_ls:
+            m = min(r_ls, key=lambda x: x[0])
+        else:
+            m = 0
+
     #print(r_ls)
     #if depth == 0:
     #    print(depth, sorted(r_ls, key=lambda x: x[0], reverse=True), turn)
     return m
+
+def game_over(board_p:list):
+    x = 0
+    o = 0
+    for i in board_p:
+        for j in i:
+            if j.r == 0:
+                return False
+            elif j.r == "X":
+                x += 1
+            elif j.r == "O":
+                o += 1
+            
+    if x > o:
+        return "X"
+    elif x < o:
+        return "O"
+    else:
+        return "T"
