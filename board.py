@@ -94,30 +94,7 @@ def calculate_reward(board_p:list, edge:Edge):
 
     return reward
 
-def calculate_regret(board_p:list, edge:Edge):
-    edge.c = 1
-    
-    changed_squares = []
-    regret = 0
-    for i in board_p:
-        for j in i:
-            if j.r == 0:
-                SQUARED = True
-                for k in j.ls:
-                    if k.c == 0:
-                        SQUARED = False
-                if SQUARED:
-                    j.r = "O"
-                    regret += 1
-                    changed_squares.append(j)
-    
-    edge.c = 0
-    for i in changed_squares:
-        i.r = 0
-
-    return regret
-
-def calculate_reward_regret_0_layer(edges, board_p:list, depth=0, turn=True, reward=0):
+def calculate_reward_n_layer(edges, board_p:list, depth=0, turn=True, reward=0):
     max_reward = (0, None)
 
     ls = edges
@@ -221,11 +198,6 @@ for i in range(len(board_h) + len(board_v)):
     else:
         ls_edges.append(board_v[i_y])
         i_y += 1
-
-board_h[0][0].c = 1
-board_h[0][1].c = 1
-board_v[0][1].c = 1
-board_v[0][2].c = 1
 
 draw_board(ls_edges, board_p)
 print(calculate_reward_regret_0_layer(ls_edges, board_p))
